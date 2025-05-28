@@ -1,0 +1,46 @@
+<network>
+  <name>homelab</name>
+  <uuid>d2c4c2ac-7b91-4b1e-9c7f-8a9b3c2d1e0f</uuid>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr-homelab' stp='on' delay='0'/>
+  <mac address='52:54:00:12:34:56'/>
+  <domain name='homelab.local'/>
+  <ip address='192.168.100.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.100.10' end='192.168.100.100'/>
+      <!-- Static DHCP reservations for predictable IPs -->
+      <host mac='52:54:00:12:34:01' name='homelab-master' ip='192.168.100.10'/>
+      <host mac='52:54:00:12:34:02' name='homelab-worker1' ip='192.168.100.11'/>
+      <host mac='52:54:00:12:34:03' name='homelab-worker2' ip='192.168.100.12'/>
+      <host mac='52:54:00:12:34:04' name='homelab-worker3' ip='192.168.100.13'/>
+      <host mac='52:54:00:12:34:05' name='homelab-storage' ip='192.168.100.20'/>
+      <host mac='52:54:00:12:34:06' name='homelab-lb' ip='192.168.100.30'/>
+    </dhcp>
+  </ip>
+  <!-- IPv6 support -->
+  <ip family='ipv6' address='fd00:homelab::1' prefix='64'>
+    <dhcp>
+      <range start='fd00:homelab::100' end='fd00:homelab::200'/>
+    </dhcp>
+  </ip>
+  <!-- DNS forwarders -->
+  <dns>
+    <forwarder addr='8.8.8.8'/>
+    <forwarder addr='1.1.1.1'/>
+    <!-- Local DNS entries -->
+    <host ip='192.168.100.10'>
+      <hostname>master.homelab.local</hostname>
+      <hostname>k8s-master.homelab.local</hostname>
+    </host>
+    <host ip='192.168.100.11'>
+      <hostname>worker1.homelab.local</hostname>
+    </host>
+    <host ip='192.168.100.12'>
+      <hostname>worker2.homelab.local</hostname>
+    </host>
+  </dns>
+</network>
