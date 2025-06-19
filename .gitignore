@@ -1,0 +1,304 @@
+# Homelab Infrastructure .gitignore
+
+# Sensitive files and credentials
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.ssh/
+ssh_host_*
+authorized_keys
+known_hosts
+
+# Configuration files that may contain sensitive data
+*config*.yaml
+*config*.yml
+*secrets*.json
+*secrets*.yaml
+*.env
+.env.*
+terraform.tfvars
+terraform.tfstate*
+.terraform/
+.terraform.lock.hcl
+
+# Libvirt and virtualization artifacts
+*.qcow2
+*.img
+*.iso
+*.vmdk
+*.vdi
+vm-inventory.txt
+cloud-init/*/
+*.log
+
+# Temporary and cache files
+tmp/
+temp/
+cache/
+.cache/
+*.tmp
+*.temp
+*~
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.old
+backups/*/
+*.tar.gz
+*.zip
+*.7z
+
+# Logs and monitoring data
+logs/
+*.log
+*.out
+audit.log
+syslog
+auth.log
+kern.log
+mail.log
+daemon.log
+user.log
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vim/
+.netrwhist
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# Docker
+.dockerignore
+Dockerfile.*
+docker-compose.override.yml
+.docker/
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+kube-config
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Ansible
+*.retry
+.ansible/
+inventory/host_vars/
+inventory/group_vars/*/vault*
+
+# Vagrant
+.vagrant/
+*.box
+
+# Packer
+packer_cache/
+*.box
+manifest.json
+
+# Local test environments
+test-env/
+local-test/
+debug/
+
+# Documentation build artifacts
+docs/_build/
+site/
+_site/
+
+# Security tools output
+nmap-*.xml
+nessus-*.nessus
+openvas-*.xml
+security-scan-*.txt
+
+# Performance monitoring
+perf.data*
+*.prof
+*.trace
+
+# Generated certificates and keys (examples only)
+examples/certs/
+examples/keys/
+examples/ca/
+
+# Local customizations
+local/
+custom/
+override/
+*-local.*
+*-custom.*
+
+# Compiled binaries
+*.exe
+*.com
+*.class
+*.dll
+*.o
+*.so
+*.dylib
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Archive files
+*.tar
+*.zip
+*.gz
+*.bz2
+*.xz
+*.7z
+*.rar
+
+# macOS
+.AppleDouble
+.LSOverride
+Icon?
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# JetBrains IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.idea_modules/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Network captures
+*.pcap
+*.pcapng
+*.cap
+
+# SSL/TLS
+*.pem
+*.crt
+*.key
+*.csr
+*.der
+*.p7b
+*.p7c
+*.p12
+*.pfx
+
+# GPG
+*.gpg
+*.asc
+secring.*
+pubring.*
+
+# Local environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary scripts and notes
+scratch/
+notes/
+todo.txt
+NOTES.md
+TODO.md 

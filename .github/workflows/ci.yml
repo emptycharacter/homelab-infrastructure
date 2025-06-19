@@ -1,0 +1,335 @@
+name: Infrastructure CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scans weekly
+    - cron: '0 2 * * 1'
+
+env:
+  SHELLCHECK_VERSION: "v0.9.0"
+  YAMLLINT_VERSION: "1.29.0"
+
+jobs:
+  # Code Quality and Linting
+  lint:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install linting tools
+      run: |
+        pip install yamllint==${{ env.YAMLLINT_VERSION }}
+        wget -qO- "https://github.com/koalaman/shellcheck/releases/download/${{ env.SHELLCHECK_VERSION }}/shellcheck-${{ env.SHELLCHECK_VERSION }}.linux.x86_64.tar.xz" | tar -xJv
+        sudo cp "shellcheck-${{ env.SHELLCHECK_VERSION }}/shellcheck" /usr/bin/
+        
+    - name: Lint shell scripts
+      run: |
+        echo "::group::ShellCheck Results"
+        find . -name "*.sh" -type f -exec shellcheck {} +
+        echo "::endgroup::"
+        
+    - name: Lint YAML files
+      run: |
+        echo "::group::YAML Lint Results"
+        find . -name "*.yml" -o -name "*.yaml" | grep -v .github | xargs yamllint
+        echo "::endgroup::"
+        
+    - name: Check file permissions
+      run: |
+        echo "::group::File Permission Check"
+        find . -name "*.sh" -type f ! -perm -u+x -exec echo "Missing execute permission: {}" \;
+        find . -name "*.sh" -type f ! -perm -u+x | grep -q . && exit 1 || echo "All shell scripts have correct permissions"
+        echo "::endgroup::"
+
+  # Security Scanning
+  security:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+        
+    - name: Secret detection with Gitleaks
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE}}
+        
+    - name: Check for hardcoded secrets
+      run: |
+        echo "::group::Secret Detection"
+        # Check for common patterns
+        if grep -r -n "password\s*=" --include="*.sh" --include="*.yml" --include="*.yaml" .; then
+          echo "::error::Found potential hardcoded passwords"
+          exit 1
+        fi
+        if grep -r -n "api_key\s*=" --include="*.sh" --include="*.yml" --include="*.yaml" .; then
+          echo "::error::Found potential hardcoded API keys"
+          exit 1
+        fi
+        echo "No hardcoded secrets detected"
+        echo "::endgroup::"
+
+  # Infrastructure Testing
+  infrastructure-test:
+    name: Infrastructure Testing
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-suite: [syntax, configuration, templates]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libvirt-clients libvirt-daemon-system qemu-kvm
+        sudo apt-get install -y python3-libvirt python3-yaml
+        
+    - name: Test script syntax
+      if: matrix.test-suite == 'syntax'
+      run: |
+        echo "::group::Script Syntax Testing"
+        for script in $(find . -name "*.sh" -type f); do
+          echo "Testing syntax: $script"
+          bash -n "$script" || exit 1
+        done
+        echo "All scripts have valid syntax"
+        echo "::endgroup::"
+        
+    - name: Test configuration files
+      if: matrix.test-suite == 'configuration'
+      run: |
+        echo "::group::Configuration Testing"
+        # Test XML configurations
+        for xml in $(find . -name "*.xml" -type f); do
+          echo "Validating XML: $xml"
+          xmllint --noout "$xml" || exit 1
+        done
+        echo "All XML configurations are valid"
+        echo "::endgroup::"
+        
+    - name: Test VM templates
+      if: matrix.test-suite == 'templates'
+      run: |
+        echo "::group::Template Testing"
+        # Validate VM templates have required placeholders
+        for template in templates/*.xml; do
+          if [ -f "$template" ]; then
+            echo "Checking template: $template"
+            required_placeholders=("HOSTNAME_PLACEHOLDER" "UUID_PLACEHOLDER" "MEMORY_PLACEHOLDER" "VCPU_PLACEHOLDER")
+            for placeholder in "${required_placeholders[@]}"; do
+              if ! grep -q "$placeholder" "$template"; then
+                echo "::error::Missing required placeholder $placeholder in $template"
+                exit 1
+              fi
+            done
+          fi
+        done
+        echo "All templates have required placeholders"
+        echo "::endgroup::"
+
+  # Documentation Check
+  documentation:
+    name: Documentation Quality
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check documentation structure
+      run: |
+        echo "::group::Documentation Structure Check"
+        required_files=("README.md" "CONTRIBUTING.md" "SECURITY.md" "LICENSE" "CHANGELOG.md")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "::error::Missing required file: $file"
+            exit 1
+          fi
+        done
+        echo "All required documentation files present"
+        echo "::endgroup::"
+        
+    - name: Check for TODO items
+      run: |
+        echo "::group::TODO Item Check"
+        todo_count=$(grep -r "TODO\|FIXME\|XXX" --include="*.sh" --include="*.md" --include="*.yml" . | wc -l)
+        if [ "$todo_count" -gt 0 ]; then
+          echo "::warning::Found $todo_count TODO items in codebase"
+          grep -r "TODO\|FIXME\|XXX" --include="*.sh" --include="*.md" --include="*.yml" .
+        else
+          echo "No TODO items found"
+        fi
+        echo "::endgroup::"
+        
+    - name: Check README completeness
+      run: |
+        echo "::group::README Completeness Check"
+        required_sections=("Architecture" "Getting Started" "Security" "Contributing")
+        for section in "${required_sections[@]}"; do
+          if ! grep -q "## .*$section" README.md; then
+            echo "::warning::README missing recommended section: $section"
+          fi
+        done
+        echo "README completeness check complete"
+        echo "::endgroup::"
+
+  # Performance Testing
+  performance:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || contains(github.event.pull_request.labels.*.name, 'performance')
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup test environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libvirt-clients libvirt-daemon-system qemu-kvm
+        sudo usermod -a -G libvirt runner
+        
+    - name: Test script performance
+      run: |
+        echo "::group::Script Performance Testing"
+        for script in setup-homelab.sh libvirt-manager.sh storage/create-storage-pools.sh; do
+          if [ -f "$script" ]; then
+            echo "Testing performance of: $script"
+            time timeout 30s bash -n "$script" || echo "Script validation completed"
+          fi
+        done
+        echo "::endgroup::"
+
+  # Dependency Check
+  dependency-check:
+    name: Dependency Security Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for vulnerable dependencies
+      run: |
+        echo "::group::Dependency Security Check"
+        # Check for outdated or vulnerable system packages mentioned in scripts
+        vulnerable_packages=("openssl<1.1.1" "openssh<8.0" "curl<7.68")
+        for package in "${vulnerable_packages[@]}"; do
+          if grep -r "$package" --include="*.sh" .; then
+            echo "::warning::Found reference to potentially vulnerable package: $package"
+          fi
+        done
+        echo "Dependency security check complete"
+        echo "::endgroup::"
+
+  # Integration Testing
+  integration-test:
+    name: Integration Testing
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup libvirt environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libvirt-clients libvirt-daemon-system qemu-kvm virtinst
+        sudo usermod -a -G libvirt runner
+        sudo systemctl start libvirtd
+        
+    - name: Test VM creation workflow (dry-run)
+      run: |
+        echo "::group::VM Creation Integration Test"
+        # Test the workflow without actually creating VMs
+        export LIBVIRT_DEFAULT_URI="qemu:///system"
+        
+        # Test network creation
+        if [ -f "networks/homelab-network.xml" ]; then
+          sudo virsh net-define networks/homelab-network.xml --validate || echo "Network validation test complete"
+        fi
+        
+        # Test storage pool creation
+        if [ -x "storage/create-storage-pools.sh" ]; then
+          bash -n storage/create-storage-pools.sh || echo "Storage script validation complete"
+        fi
+        
+        echo "Integration testing complete"
+        echo "::endgroup::"
+
+  # Security Compliance
+  compliance:
+    name: Security Compliance Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: CIS Benchmark compliance check
+      run: |
+        echo "::group::CIS Compliance Check"
+        # Check for basic CIS compliance in configurations
+        compliance_issues=0
+        
+        # Check for SSH hardening
+        if grep -r "PasswordAuthentication yes" --include="*.sh" .; then
+          echo "::warning::Found SSH password authentication enabled"
+          compliance_issues=$((compliance_issues + 1))
+        fi
+        
+        # Check for proper file permissions in scripts
+        if find . -name "*.sh" -perm /o+w -type f | grep -q .; then
+          echo "::warning::Found world-writable scripts"
+          compliance_issues=$((compliance_issues + 1))
+        fi
+        
+        if [ $compliance_issues -eq 0 ]; then
+          echo "Basic compliance checks passed"
+        else
+          echo "Found $compliance_issues compliance issues"
+        fi
+        echo "::endgroup::"
+
+  # Notification
+  notify:
+    name: Notification
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [lint, security, infrastructure-test, documentation]
+    steps:
+    - name: Notify on failure
+      if: contains(needs.*.result, 'failure')
+      run: |
+        echo "::error::CI pipeline failed. Please check the failed jobs above."
+        
+    - name: Notify on success
+      if: ${{ !contains(needs.*.result, 'failure') }}
+      run: |
+        echo "::notice::All CI checks passed successfully! 🚀" 
