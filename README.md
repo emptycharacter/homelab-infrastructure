@@ -1,330 +1,195 @@
 # Homelab Infrastructure
 
-A production-grade homelab environment featuring enterprise network security, virtualization, automation, and modern DevOps practices. Built to demonstrate real-world infrastructure engineering skills and enterprise-level thinking through hands-on implementation.
+My personal homelab learning journey - exploring networking, virtualization, and automation concepts through hands-on experimentation over the past two years as a CS student.
 
-## 🚀 Overview
+## 🎓 Overview
 
-This repository showcases a comprehensive homelab infrastructure that mirrors enterprise environments, implementing industry best practices for network security, virtualization, automation, and observability. The project demonstrates progressive learning from basic infrastructure concepts to advanced platform engineering practices.
+This repository documents my homelab learning adventure. As a computer science student, I've been exploring how enterprise networking and infrastructure actually work by building and breaking things in my own environment.
 
-**Key Achievements:**
-- 99.8% uptime over 18 months of continuous operation
-- 5 VLANs with enterprise-grade security policies
-- Fully automated infrastructure deployment with IaC
-- Comprehensive monitoring and observability stack
-- CI/CD pipeline with automated security scanning
-- Professional documentation and code standards
+**What I'm Learning:**
+- Network segmentation and security principles (VLANs, firewalls, VPNs)
+- Virtualization basics with KVM and Proxmox
+- How to automate repetitive tasks (still figuring this out!)
+- Documentation and troubleshooting practices
+- Why enterprise networks are designed the way they are
 
-## Architecture
+**Current Status:**
+- Been running for 18+ months with decent uptime (when I don't break things while learning)
+- Services go up and down as I experiment with new configs and try new things
+- Sometimes I accidentally break networking while testing VLANs or trying new setups
+- Usually back up within a few hours once I figure out what I did wrong
+- 5 VLANs that took me forever to understand and configure properly
+- A mix of VMs for different experiments and learning projects
+- Scripts that sometimes work, sometimes don't (getting better at this!)
 
-### Core Infrastructure
-- **Firewall/Router:** pfSense on dedicated hardware
-- **Hypervisors:** Proxmox + KVM / libvirt / QEMU nodes
-- **Network Switch:** TL-SG108E (managed, VLAN-aware)
-- **Storage:** Custom Linux NAS with NFS/Samba
-- **DNS/Ad-blocking:** AdGuard Home in LXC container
+**Reality Check:**
+- **Not production uptime** - this is a learning lab where breaking things is expected
+- **Downtime happens** when I'm pushing myself to learn new concepts  
+- **That's the point** - safe environment to make mistakes and learn from them
+- **No security issues so far** (that I know of) - still learning about proper security
 
-### Network Segmentation
-| VLAN | Purpose | Subnet | Access Policy |
-|------|---------|--------|---------------|
-| 10 | Admin/Management | 192.168.10.0/24 | Restricted to admin devices |
-| 20 | Trusted Devices | 192.168.20.0/24 | Full LAN access |
-| 30 | IoT Devices | 192.168.30.0/24 | Internet only, no inter-VLAN |
-| 40 | Guest Network | 192.168.40.0/24 | Internet only, isolated |
-| 50 | VPN Clients | 192.168.50.0/24 | Policy-based access |
+**Student Reality Check:** This is my personal learning environment where I experiment with concepts from my coursework. Configurations are specific to my setup and hardware. I'm sharing this as a learning resource and to document my technical growth, not as a deployment guide that'll work everywhere.
 
-### Security & Monitoring
-- **IDS/IPS:** Zeek and Suricata for network traffic analysis
-- **VPN:** WireGuard server with policy-based routing
-- **Firewall Rules:** Granular inter-VLAN communication policies
-- **DNS Filtering:** Network-wide ad blocking and malware protection
+## 🗺️ My Learning Path
 
-## Key Technical Implementations
+### How I Got Here:
+1. **Started Simple** - Basic pfSense setup because I wanted to understand how "real" networks work
+2. **Added VLANs Gradually** - Took me months to really get network segmentation
+3. **Tried Automation** - Lots of broken scripts and failed attempts before anything worked
+4. **Documentation** - Writing things down helped me actually understand what I was doing
+5. **Kept Experimenting** - Always finding new things to try or better ways to do existing stuff
 
-### Cross-VLAN Security
-Implemented granular firewall rules allowing specific services between VLANs while maintaining isolation. Example: Trusted devices can access NAS on Admin VLAN via NFS (port 2049) but cannot access management interfaces.
+### Major Learning Moments:
+- **GPU Passthrough** - This took weeks to figure out and I broke the VM like 10 times
+- **Network Security** - Learning why you actually need firewall rules (spoiler: everything breaks without them)
+- **Automation Scripts** - Discovering that scripts break when you change literally anything
+- **Storage Management** - Understanding why enterprise storage is so complicated
 
-### GPU Passthrough
-Configured KVM with VFIO for AMD 780M GPU passthrough to Windows VMs, enabling native graphics performance for development and testing environments.
+## 🏗️ What I've Built (So Far)
 
-### Automated Management
-- Python scripts for VM health monitoring and automated backups
-- Bash scripts for routine maintenance (log rotation, service checks)
-- Automated DHCP reservation management for new devices
+### Network Experiments
+My network setup has evolved as I've learned more about how enterprise networks actually work:
 
-### Storage Infrastructure
-- NFS shares for VM storage with cross-VLAN accessibility
-- Samba shares for Windows compatibility
-- Automated backup verification and integrity checking
+| VLAN | What I Use It For | What I Learned |
+|------|-------------------|-----------------|
+| 10 (Admin) | Management interfaces, my admin machine | Why you isolate management traffic |
+| 20 (Trusted) | My daily-use devices | How to set up "normal" network access |
+| 30 (IoT) | Smart home devices that I don't trust | Why IoT isolation matters |
+| 40 (Guest) | Friends' devices | Internet-only access is harder than it sounds |
+| 50 (VPN) | Remote access when I'm not home | VPN routing is confusing but cool |
 
-## Technologies Used
+### Infrastructure Learning Lab
+- **pfSense Router/Firewall** - My introduction to "real" networking gear
+- **Proxmox + KVM** - Learning virtualization beyond VirtualBox
+- **Custom NAS** - File sharing and understanding storage concepts
+- **AdGuard Home** - DNS and network-wide ad blocking
+- **Monitoring Setup** - Trying to understand what "observability" means
 
-**Virtualization:** Proxmox, KVM, QEMU, libvirt, LXC containers  
-**Networking:** pfSense, VLANs, WireGuard, DHCP/DNS management  
-**Security:** Zeek, Suricata, firewall policy management  
-**Automation:** Python, Bash, cron, systemd services  
-**Storage:** NFS, Samba, ext4, automated backup scripts  
+### Current VM Experiments
+- **Master Node** - Learning Kubernetes basics (still very confused)
+- **Worker Nodes** - Understanding distributed systems concepts
+- **Storage VM** - Experimenting with different storage solutions
+- **Monitoring** - Prometheus and Grafana (pretty graphs!)
 
-## Documentation & Best Practices
+## 📚 Learning Together
 
-- Maintained detailed network topology diagrams
-- Documented all firewall rules with business justification
-- Created troubleshooting runbooks for common issues
-- Version-controlled configuration files
-- Automated configuration backup procedures
+**If you're interested in building something similar:**
 
-## Learning Outcomes
+### What Might Be Helpful:
+- **My Network Design** - Study my VLAN setup, but you'll need to adapt it for your needs
+- **Script Examples** - See how I solved problems, but expect to rewrite everything for your environment
+- **Documentation Approach** - Maybe my way of documenting infrastructure will give you ideas
+- **Failure Stories** - Check my commit history to see what went wrong and how I fixed it
 
-This project provided hands-on experience with:
-- Enterprise network security principles
-- VLAN design and implementation
-- Network traffic analysis and monitoring
-- Virtualization at scale
-- Infrastructure automation and documentation
-- Troubleshooting complex multi-system environments
+### Reality Check:
+- **This won't work out-of-the-box** - It's completely customized for my specific hardware and network
+- **Some things are over-engineered** - I was learning and wanted to try complex concepts
+- **Scripts have bugs** - I'm still fixing things as I discover them
+- **Documentation is incomplete** - Always a work in progress
 
-## Performance Metrics
+### My Learning Resources:
+- **YouTube Channels** - NetworkChuck, Jeff Geerling, Craft Computing
+- **Reddit Communities** - r/homelab, r/selfhosted, r/networking
+- **Documentation** - Reading official docs even when they're confusing
+- **Trial and Error** - Breaking things and figuring out how to fix them
 
-- **Network Throughput:** Consistent gigabit performance across all VLANs
-- **Storage Availability:** 99.9% uptime with automated failover
-- **Security:** Zero successful intrusions, comprehensive monitoring
-- **Maintenance:** 95% of routine tasks automated
-
-## Future Improvements
-
-- [ ] Implement Prometheus + Grafana monitoring stack
-- [ ] Expand containerization with Kubernetes cluster
-- [ ] Add distributed storage with Ceph
-- [ ] Implement Infrastructure as Code with Terraform
-- [ ] Enhanced security monitoring with ELK stack
-
-## 🎯 Getting Started
-
-### Quick Start
-```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/homelab-infrastructure.git
-cd homelab-infrastructure
-
-# 2. Validate your environment
-./scripts/validate-environment.sh --full
-
-# 3. Apply security hardening
-./scripts/security-hardening.sh --apply
-
-# 4. Deploy infrastructure with IaC
-cd iac/terraform/environments/development
-terraform init && terraform plan && terraform apply
-
-# 5. Configure systems with Ansible
-cd ../../../ansible
-ansible-playbook -i inventory/homelab.yml playbooks/site.yml
-
-# 6. Deploy monitoring stack
-cd ../monitoring
-docker-compose up -d
-
-# 7. Verify deployment
-cd ../scripts
-./validate-environment.sh --full
-```
-
-### Prerequisites
-- **Hardware:** 16GB+ RAM, 100GB+ storage, virtualization support
-- **OS:** Ubuntu 22.04 LTS or Debian 11+ (recommended)
-- **Network:** Internet connection for package downloads
-- **Permissions:** sudo access for system configuration
-
-### Learning Path
-1. **Foundation:** Start with basic VM creation (`setup-homelab.sh`)
-2. **Automation:** Explore Infrastructure as Code (`iac/`)
-3. **Monitoring:** Deploy observability stack (`monitoring/`)
-4. **Security:** Implement hardening practices (`scripts/security-hardening.sh`)
-5. **Platform Engineering:** Advanced orchestration and automation
-
-## 📁 Repository Structure
+## 🛠️ Current Project Structure
 
 ```
 homelab-infrastructure/
-├── .github/                 # GitHub workflows and templates
-│   ├── workflows/          # CI/CD pipelines
-│   └── ISSUE_TEMPLATE/     # Issue and PR templates
-├── docs/                    # Architecture and technical documentation
-│   └── architecture.md     # Comprehensive architecture diagrams
-├── iac/                     # Infrastructure as Code
-│   ├── terraform/          # Infrastructure provisioning
-│   ├── ansible/            # Configuration management
-│   └── kubernetes/         # Container orchestration
-├── monitoring/              # Observability and monitoring stack
-│   ├── prometheus/         # Metrics collection
-│   ├── grafana/           # Visualization and dashboards
-│   └── alertmanager/      # Alert management
-├── networks/                # Network configurations
-│   └── homelab-network.xml # Libvirt network definitions
-├── scripts/                 # Automation and utility scripts
-│   ├── validate-environment.sh  # Environment validation
-│   └── security-hardening.sh   # Security automation
-├── storage/                 # Storage management
-│   └── create-storage-pools.sh # Storage pool automation
-├── templates/               # VM and configuration templates
-│   └── homelab-node-template.xml # Base VM template
-├── CONTRIBUTING.md          # Contribution guidelines
-├── SECURITY.md             # Security policies and reporting
-├── CHANGELOG.md            # Version history and changes
-└── LICENSE                 # MIT license
+├── docs/                    # My notes and architecture diagrams
+├── monitoring/              # Prometheus/Grafana setup attempts
+├── networks/                # libvirt network configs
+├── scripts/                 # Automation scripts (work in progress)
+├── storage/                 # Storage pool management
+├── templates/               # VM templates that mostly work
+└── setup files/            # Main setup scripts
 ```
 
-## 🏢 Enterprise Practices Demonstrated
+## 🚧 What I'm Working On
 
-### DevOps & Platform Engineering
-- **Infrastructure as Code** with Terraform and Ansible
-- **CI/CD Pipelines** with automated testing and security scanning
-- **GitOps Workflow** with version-controlled infrastructure
-- **Container Orchestration** with Kubernetes and Docker
-- **Service Discovery** and load balancing implementation
+### Current Challenges:
+- **Kubernetes Learning** - Container orchestration is way harder than I thought
+- **Script Reliability** - Making my automation scripts not break everything when I change one thing
+- **Useful Monitoring** - Understanding what metrics actually matter vs. just making pretty graphs
+- **Security Learning** - Figuring out proper security practices without breaking functionality
+- **Documentation** - Keeping up with what I've learned and changed (always behind on this)
 
-### Security Engineering
-- **Zero Trust Architecture** with network micro-segmentation
-- **Automated Security Hardening** with CIS benchmark compliance
-- **Vulnerability Management** with continuous security scanning
-- **Incident Response** procedures and automated alerting
-- **Compliance Monitoring** and audit trail implementation
+### Things That Broke Recently:
+- **VM Networking** - Changed something and lost connectivity for a day (still not sure what I did)
+- **Storage Permissions** - NFS permissions are still really confusing to me
+- **Monitoring Alerts** - Way too many false positives, trying to learn how to tune them properly
+- **Docker Containers** - Accidentally deleted the wrong container and lost some configs
+- **SSH Access** - Locked myself out while testing firewall rules (had to use console access)
 
-### Site Reliability Engineering
-- **Observability Stack** with metrics, logs, and distributed tracing
-- **SLI/SLO Implementation** with automated alerting
-- **Chaos Engineering** principles and failure testing
-- **Capacity Planning** with performance monitoring
-- **Disaster Recovery** automation and backup strategies
+### Next Learning Goals:
+- **Infrastructure as Code** - Want to try Terraform and Ansible properly (instead of my current manual approach)
+- **Container Security** - Learning how to secure containers without breaking everything
+- **Better Networking** - Maybe try setting up a service mesh if I ever understand regular networking
+- **Backup Strategies** - Actually implementing disaster recovery instead of just hoping nothing breaks
+- **Testing Environment** - Setting up a separate lab so I can break things without affecting my main setup
 
-## 🛠️ Troubleshooting
+## 🎓 Student Learning Project
 
-### Common Issues
+**Full Transparency:** I'm a CS student learning through hands-on projects. This homelab represents:
 
-**Environment Validation Failures:**
-```bash
-# Check system requirements
-./scripts/validate-environment.sh --full
+- **2+ years of gradual learning** - Definitely not built overnight, lots of incremental progress
+- **Lots of trial and error** - Many failed attempts, restarts, and "why doesn't this work?!" moments
+- **Personal experiment** - Exploring concepts from my networking and systems courses
+- **Work in progress** - Always finding better ways to do things or learning I did something wrong
 
-# Fix common issues automatically
-./scripts/validate-environment.sh --fix
-```
+**I'm not claiming to be an expert** - Just sharing my learning journey and hoping it might help other students who are also exploring infrastructure concepts. If you're a fellow student or hobbyist, feel free to learn from my mistakes!
 
-**Virtualization Issues:**
-```bash
-# Verify KVM support
-egrep -c '(vmx|svm)' /proc/cpuinfo
+## 🐛 When Things Don't Work
 
-# Check libvirt status
-sudo systemctl status libvirtd
-sudo usermod -a -G libvirt $USER
-```
+### Common Issues I've Encountered:
+- **Permission Problems** - libvirt groups, file permissions, etc.
+- **Network Connectivity** - VMs not getting IPs, DNS not resolving
+- **Storage Issues** - NFS mounts failing, permission errors
+- **Script Failures** - Environment differences, missing dependencies
 
-**Network Connectivity:**
-```bash
-# Test VM network connectivity
-virsh net-list --all
-virsh net-dhcp-leases homelab
+### My Debugging Approach:
+1. **Check the logs** - Usually there's an error message somewhere
+2. **Google the error** - Someone else has probably had this problem
+3. **Try the simplest solution first** - Often it's something basic
+4. **Ask for help** - Reddit, Discord, or classmates usually have ideas
+5. **Document the fix** - So I don't forget next time
 
-# Debug network issues
-./libvirt-manager.sh network
-```
+## 🤝 Learning Community
 
-**Monitoring Stack Issues:**
-```bash
-# Check monitoring services
-cd monitoring/
-docker-compose ps
-docker-compose logs -f prometheus
-```
+### Always Happy to Chat About:
+- **Homelab learning experiences** - Both successes and spectacular failures
+- **CS coursework connections** - How classroom concepts apply to real infrastructure
+- **Beginner questions** - I remember being confused about everything
+- **Better approaches** - Always looking to learn from others who've figured things out
 
-### Getting Help
+### What I Can Help With:
+- **Getting started** - Basic homelab setup and common beginner mistakes
+- **Network concepts** - VLAN setup, firewall basics, VPN configuration
+- **VM management** - libvirt/KVM basics, common troubleshooting
+- **Documentation tips** - How I organize and track my learning
 
-1. **Check Documentation:** Review [docs/architecture.md](docs/architecture.md) for detailed technical information
-2. **Search Issues:** Look through existing [GitHub Issues](https://github.com/your-username/homelab-infrastructure/issues)
-3. **Run Diagnostics:** Use `./scripts/validate-environment.sh --full` for comprehensive system check
-4. **Community Support:** Join homelab communities on Reddit r/homelab or Discord servers
+### What I'm Still Learning:
+- **Basic automation** - Getting better at writing scripts that don't break when I change things
+- **Security best practices** - Learning proper security approaches (still making lots of mistakes)
+- **System optimization** - Understanding why things are slow and how to fix them
+- **Kubernetes** - Container orchestration is still very confusing to me
+- **Not breaking things** - Working on testing changes before applying them to everything
 
-## 🤝 Contributing
+## 📞 Questions & Collaboration
 
-We welcome contributions from the community! This project serves as a learning platform for infrastructure and DevOps practices.
+**Email:** joshua@emptycharacter.dev  
+**Fellow student/hobbyist looking to learn and share knowledge**
 
-### How to Contribute
-
-1. **Fork the Repository** and create a feature branch
-2. **Follow Code Standards** outlined in [CONTRIBUTING.md](CONTRIBUTING.md)
-3. **Test Your Changes** with the validation scripts
-4. **Submit a Pull Request** with detailed description
-5. **Participate in Code Review** and address feedback
-
-### Contribution Areas
-
-- **Documentation:** Improve guides, add tutorials, fix typos
-- **Infrastructure Code:** Enhance Terraform modules, Ansible roles
-- **Monitoring:** Add new dashboards, alerting rules, exporters
-- **Security:** Implement additional hardening measures
-- **Testing:** Expand test coverage, add integration tests
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines and development workflow.
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-### Technologies & Tools
-- **Virtualization:** KVM, libvirt, QEMU for robust virtualization platform
-- **Networking:** pfSense, VLANs, WireGuard for enterprise networking
-- **Monitoring:** Prometheus, Grafana, AlertManager for observability
-- **Security:** Zeek, Suricata, Fail2ban for security monitoring
-- **Automation:** Terraform, Ansible, GitHub Actions for DevOps practices
-
-### Learning Resources
-- **Documentation:** Official documentation for all implemented technologies
-- **Community:** Homelab communities on Reddit, Discord, and GitHub
-- **Best Practices:** Enterprise architecture patterns and industry standards
-- **Continuous Learning:** Ongoing exploration of new technologies and practices
-
-### Contributors
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/your-username">
-        <img src="https://github.com/your-username.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>Joshua Farin</b></sub>
-      </a>
-      <br />
-      <sub>Project Maintainer</sub>
-    </td>
-  </tr>
-</table>
-
-## 📞 Contact & Professional Network
-
-For questions about specific implementations, collaboration opportunities, or technical discussions:
-
-- **Email:** joshua@emptycharacter.dev
-- **LinkedIn:** [joshua-farin](https://linkedin.com/in/joshua-farin)
-- **Portfolio:** [emptycharacter.dev](https://emptycharacter.dev)
-- **GitHub:** [@your-username](https://github.com/your-username)
+**Note:** I'm definitely still learning! If you spot issues, have suggestions for improvement, or just want to share your own homelab experiences, I'd love to hear from you. This repository reflects my current understanding, which continues to evolve as I learn more.
 
 ---
 
-## 🎓 Educational Impact
+## 🔗 Related Projects
 
-*This homelab infrastructure represents 500+ hours of research, implementation, and continuous improvement. It serves as both a learning platform and a demonstration of enterprise-level infrastructure practices. The project showcases progression from basic networking concepts to advanced platform engineering, demonstrating real-world applicable skills valued in modern technology organizations.*
-
-**Key Learning Outcomes:**
-- Enterprise infrastructure design and implementation
-- Modern DevOps and platform engineering practices  
-- Security-first approach to system administration
-- Professional software development workflow
-- Continuous learning and adaptation to new technologies
+- **Portfolio:** [emptycharacter.dev](https://emptycharacter.dev) - My other learning projects
+- **LinkedIn:** [joshua-farin](https://linkedin.com/in/joshua-farin) - Professional learning journey
 
 ---
 
-<div align="center">
-  <strong>🚀 Built with passion for learning and excellence in infrastructure engineering 🚀</strong>
-</div>
+*This homelab represents hundreds of hours of learning, experimenting, breaking things, and troubleshooting. It's been an incredible (and often frustrating) hands-on complement to my CS coursework, helping me understand how the infrastructure behind modern applications actually works. Still lots to learn and plenty more things to break, but that's the fun part!* 🚀📚
